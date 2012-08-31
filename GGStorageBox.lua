@@ -2,7 +2,7 @@
 --
 -- Date: August 31, 2012
 --
--- Version: 0.1
+-- Version: 0.1.1
 --
 -- File name: GGStorageBox.lua
 --
@@ -11,6 +11,10 @@
 -- Update History:
 --
 -- 0.1 - Initial release
+--
+-- 0.1.1 
+-- 		Change to a local object as per Walther Luh's advice
+-- 		Small typo fixes
 --
 -- Comments: 
 --
@@ -37,8 +41,8 @@
 --
 ----------------------------------------------------------------------------------------------------
 
-GGStorageBox = {}
-GGStorageBox_mt = { __index = GGStorageBox }
+local GGStorageBox = {}
+local GGStorageBox_mt = { __index = GGStorageBox }
 
 local json = require( "json" )
 local lfs = require( "lfs" )
@@ -71,7 +75,7 @@ end
 -- @param path The path to the database.
 function GGStorageBox:_openDatabase( path )
 
-	if databaseName then
+	if path then
 		return sqlite3.open( path )
 	end
 	
@@ -206,7 +210,7 @@ function GGStorageBox:save()
 		local database = self:_openDatabase( path .. "/" .. self.id .. ".box" )
 	
 		if database then
-			saveDatabase( database, data )
+			self:_saveDatabase( database, data )
 		end
 		
 	else
@@ -320,3 +324,5 @@ function GGStorageBox:destroy()
 	self:clear()
 	self = nil
 end
+
+return GGStorageBox
