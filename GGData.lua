@@ -1,10 +1,10 @@
--- Project: GGStorageBox
+-- Project: GGData
 --
 -- Date: August 31, 2012
 --
--- Version: 0.1.1
+-- Version: 0.1.2
 --
--- File name: GGStorageBox.lua
+-- File name: GGData.lua
 --
 -- Author: Graham Ranson of Glitch Games - www.glitchgames.co.uk
 --
@@ -16,10 +16,13 @@
 -- 		Change to a local object as per Walther Luh's advice
 -- 		Small typo fixes
 --
+-- 0.1.2
+--		Renamed project to GGData
+--
 -- Comments: 
 --
 --		Many people have used Ice however as of late it seems to be experiencing weird 
---		issues. GGStorageBox is a trimmed down version to allow for better stability.
+--		issues. GGData is a trimmed down version to allow for better stability.
 --
 -- Copyright (C) 2012 Graham Ranson, Glitch Games Ltd.
 --
@@ -41,23 +44,23 @@
 --
 ----------------------------------------------------------------------------------------------------
 
-local GGStorageBox = {}
-local GGStorageBox_mt = { __index = GGStorageBox }
+local GGData = {}
+local GGData_mt = { __index = GGData }
 
 local json = require( "json" )
 local lfs = require( "lfs" )
 local sqlite3 = require( "sqlite3" )
 
---- Initiates a new GGStorageBox object.
--- @param id The name of the GGStorageBox to create or load ( if it already exists ).
--- @param path The path to the GGStorageBox. Optional, defaults to "boxes".
--- @param baseDir The base directory for the GGStorageBox. Optional, defaults to system.DocumentsDirectory.
+--- Initiates a new GGData object.
+-- @param id The name of the GGData to create or load ( if it already exists ).
+-- @param path The path to the GGData. Optional, defaults to "boxes".
+-- @param baseDir The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
 -- @return The new object.
-function GGStorageBox:new( id, path, baseDir )
+function GGData:new( id, path, baseDir )
     
     local self = {}
     
-    setmetatable( self, GGStorageBox_mt )
+    setmetatable( self, GGData_mt )
     
     self.id = id
     self.path = path
@@ -73,7 +76,7 @@ end
 
 --- Opens an SQLite database from disk. Called internally.
 -- @param path The path to the database.
-function GGStorageBox:_openDatabase( path )
+function GGData:_openDatabase( path )
 
 	if path then
 		return sqlite3.open( path )
@@ -84,7 +87,7 @@ end
 --- Saves data to an SQLite database. Called internally.
 -- @param database The SQLite database object.
 -- @param data A table containing the data to save.
-function GGStorageBox:_saveDatabase( database, data )
+function GGData:_saveDatabase( database, data )
 
 	if database then
 
@@ -105,7 +108,7 @@ end
 --- Loads data from an SQLite database. Called internally.
 -- @param database The SQLite database object.
 -- @return A table containing the data. Empty if no data found.
-function GGStorageBox:_loadDatabase( database )
+function GGData:_loadDatabase( database )
 
 	local result = database:exec("SELECT * FROM box")
 	local items = {}
@@ -123,19 +126,19 @@ function GGStorageBox:_loadDatabase( database )
 	
 end
 
---- Loads, or reloads, this GGStorageBox object from disk.
--- @param id The id of the GGStorageBox object.
--- @param path The path to the GGStorageBox. Optional, defaults to "boxes".
--- @param path The base directory for the GGStorageBox. Optional, defaults to system.DocumentsDirectory.
-function GGStorageBox:load( id, path, baseDir )
+--- Loads, or reloads, this GGData object from disk.
+-- @param id The id of the GGData object.
+-- @param path The path to the GGData. Optional, defaults to "boxes".
+-- @param path The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
+function GGData:load( id, path, baseDir )
 	
 	-- Set up the path
 	path = path or "boxes/"
 	
-	-- Pre-declare the new GGStorageBox object
+	-- Pre-declare the new GGData object
 	local box
 	
-	-- If no id was passed in then assume we're working with a pre-loaded GGStorageBox object so use its id
+	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
 	if not id then
 		id = self.id
 		box = self
@@ -165,10 +168,10 @@ function GGStorageBox:load( id, path, baseDir )
 		
 	end
 	
-	-- If no GGStorageBox exists then we are acting on a Class function i.e. not a pre-loaded GGStorageBox object.
+	-- If no GGData exists then we are acting on a Class function i.e. not a pre-loaded GGData object.
 	if not box then
-		-- Create the new GGStorageBox object.
-		box = GGStorageBox:new()
+		-- Create the new GGData object.
+		box = GGData:new()
 	end
 	
 	-- Copy all the properties across.
@@ -180,8 +183,8 @@ function GGStorageBox:load( id, path, baseDir )
 	
 end
 
---- Saves this GGStorageBox object to disk.
-function GGStorageBox:save()
+--- Saves this GGData object to disk.
+function GGData:save()
 
 	local data = {}
 	
@@ -230,67 +233,67 @@ function GGStorageBox:save()
 	
 end
 
---- Sets a value in this GGStorageBox object.
+--- Sets a value in this GGData object.
 -- @param name The name of the value to set.
 -- @param value The value to set.
-function GGStorageBox:set( name, value )
+function GGData:set( name, value )
 	self[ name ] = value
 end
 
---- Gets a value from this GGStorageBox object.
+--- Gets a value from this GGData object.
 -- @param name The name of the value to get.
 -- @return The value.
-function GGStorageBox:get( name )
+function GGData:get( name )
 	return self[ name ]
 end
 
---- Sets a value on this GGStorageBox object if it is new.
+--- Sets a value on this GGData object if it is new.
 -- @param name The name of the value to set.
 -- @param value The value to set.
-function GGStorageBox:setIfNew( name, value )
+function GGData:setIfNew( name, value )
 	if self[ name ] == nil then
 		self[ name ] = value
 	end
 end
 
---- Sets a value on this GGStorageBox object if it is higher than the current value.
+--- Sets a value on this GGData object if it is higher than the current value.
 -- @param name The name of the value to set.
 -- @param value The value to set.
-function GGStorageBox:setIfHigher( name, value )
+function GGData:setIfHigher( name, value )
 	if self[ name ] and value > self[ name ] then
 		self[ name ] = value
 	end
 end
 
---- Sets a value on this GGStorageBox object if it is lower than the current value.
+--- Sets a value on this GGData object if it is lower than the current value.
 -- @param name The name of the value to set.
 -- @param value The value to set.
-function GGStorageBox:setIfLower( name, value )
+function GGData:setIfLower( name, value )
 	if self[ name ] and value < self[ name ] then
 		self[ name ] = value
 	end
 end
 
---- Increments a value in this GGStorageBox object.
+--- Increments a value in this GGData object.
 -- @param name The name of the value to increment. Must be a number.
 -- @param amount The amount to increment. Optional, defaults to 1.
-function GGStorageBox:increment( name, amount )
+function GGData:increment( name, amount )
 	if self[ name ] and type( self[ name ] ) == "number" then
 		self[ name ] = self[ name ] + ( amount or 1 )
 	end
 end
 
---- Decrements a value in this GGStorageBox object.
+--- Decrements a value in this GGData object.
 -- @param name The name of the value to decrement. Must be a number.
 -- @param amount The amount to decrement. Optional, defaults to 1.
-function GGStorageBox:decrement( name, amount )
+function GGData:decrement( name, amount )
 	if self[ name ] and type( self[ name ] ) == "number" then
 		self[ name ] = self[ name ] - ( amount or 1 )
 	end
 end
 
---- Clears this GGStorageBox object.
-function GGStorageBox:clear()
+--- Clears this GGData object.
+function GGData:clear()
 	for k, v in pairs( self ) do
 		if k ~= "id" then
 			self[ k ] = nil
@@ -298,11 +301,11 @@ function GGStorageBox:clear()
 	end
 end
 
---- Deletes this GGStorageBox object from disk. 
--- @param id The id of the GGStorageBox to delete. Optional, only required if calling on a non-loaded object.
-function GGStorageBox:delete( id )
+--- Deletes this GGData object from disk. 
+-- @param id The id of the GGData to delete. Optional, only required if calling on a non-loaded object.
+function GGData:delete( id )
 	
-	-- If no id was passed in then assume we're working with a pre-loaded GGStorageBox object so use its id
+	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
 	if not id then
 		id = self.id
 	end
@@ -319,10 +322,10 @@ function GGStorageBox:delete( id )
 	
 end
 
---- Destroys this GGStorageBox object.
-function GGStorageBox:destroy()
+--- Destroys this GGData object.
+function GGData:destroy()
 	self:clear()
 	self = nil
 end
 
-return GGStorageBox
+return GGData
