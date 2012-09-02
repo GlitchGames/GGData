@@ -32,14 +32,6 @@ print( box.message ) -- prints 'hello, world'
 box:save()
 ```
 
-Features
--------------------------
-
-* Unlimited storage boxes to allow for easy separation of data.
-* Uses both Json and SQLite to obfuscate the data slightly.
-* Easy score tracking.
-* Simple API.
-
 Update History
 -------------------------
 
