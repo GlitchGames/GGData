@@ -40,6 +40,7 @@ Initial release
 
 ##### 0.1.1
 Change to a local object as per Walther Luh's advice
+
 Small typo fixes
 
 ##### 0.1.2
