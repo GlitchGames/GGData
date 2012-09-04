@@ -49,7 +49,7 @@ local GGData_mt = { __index = GGData }
 
 local json = require( "json" )
 local lfs = require( "lfs" )
-local sqlite3 = require( "sqlite3" )
+--local sqlite3 = require( "sqlite3" )
 
 --- Initiates a new GGData object.
 -- @param id The name of the GGData to create or load ( if it already exists ).
