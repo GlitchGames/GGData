@@ -269,7 +269,7 @@ end
 -- @param name The name of the value to set.
 -- @param value The value to set.
 function GGData:setIfLower( name, value )
-	if self[ name ] and value < self[ name ] then
+	if self[ name ] and value < self[ name ] or not self[ name ] then
 		self[ name ] = value
 	end
 end
