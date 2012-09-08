@@ -258,6 +258,17 @@ function GGData:isValueHigher( name, otherValue )
 	return self[ name ] > otherValue
 end
 
+--- Checks whether a value of this GGData object is lower than another value.
+-- @param name The name of the first value to check.
+-- @param otherValue The name of the other value to check. Can also be a number.
+-- @return True if the first value is lower, false otherwise.
+function GGData:isValueLower( name, otherValue )
+	if type( otherValue ) == "string" then
+		otherValue = self:get( otherValue )
+	end
+	return self[ name ] < otherValue
+end
+
 --- Checks whether this GGData object has a specific property or not.
 -- @param name The name of the value to check.
 -- @return True if the value exists and isn't nil, false otherwise.
