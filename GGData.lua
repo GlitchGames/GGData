@@ -247,6 +247,13 @@ function GGData:get( name )
 	return self[ name ]
 end
 
+--- Checks whether this GGData object has a specific property or not.
+-- @param name The name of the value to check.
+-- @return True if the value exists and isn't nil, false otherwise.
+function GGData:hasValue( name )
+	return self[ name ] ~= nil and true or false
+end
+
 --- Sets a value on this GGData object if it is new.
 -- @param name The name of the value to set.
 -- @param value The value to set.
