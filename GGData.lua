@@ -129,7 +129,7 @@ end
 --- Loads, or reloads, this GGData object from disk.
 -- @param id The id of the GGData object.
 -- @param path The path to the GGData. Optional, defaults to "boxes".
--- @param path The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
+-- @param baseDir The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
 function GGData:load( id, path, baseDir )
 	
 	-- Set up the path
