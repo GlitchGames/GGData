@@ -362,6 +362,32 @@ function GGData:delete( id )
 	
 end
 
+--- Enables or disables the Syncing of this box.
+-- @param enabled True if Sync should be enabled, false otherwise.
+function GGData:setSync( enabled, id )
+
+	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
+	if not id then
+		id = self.id
+	end
+	
+	native.setSync( "boxes/" .. id .. ".box", { iCloudBackup = enabled } )
+	
+end
+
+--- Checks if Syncing for this box is enabled or not.
+-- @param enabled True if Sync is enabled, false otherwise.
+function GGData:getSync( id )
+
+	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
+	if not id then
+		id = self.id
+	end
+	
+	return native.getSync( "boxes/" .. id .. ".box", { key = "iCloudBackup" } )
+	
+end
+
 --- Destroys this GGData object.
 function GGData:destroy()
 	self:clear()

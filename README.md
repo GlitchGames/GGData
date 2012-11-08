@@ -32,6 +32,17 @@ print( box.message ) -- prints 'hello, world'
 box:save()
 ```
 
+##### Enable or disable iCloud backup
+```lua
+box:setSync( true )
+box:setSync( false )
+```
+
+##### Check if iCloud is enabled or disabled
+```lua
+print( box:getSync() )
+```
+
 Update History
 -------------------------
 
