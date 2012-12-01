@@ -395,8 +395,12 @@ end
 --- Clears this GGData object.
 function GGData:clear()
 	for k, v in pairs( self ) do
-		if k ~= "id" then
-			self[ k ] = nil
+		if k ~= "integrityControlEnabled" 
+			and k ~= "integrityAlgorithm"
+			and k ~= "integrityKey"
+			and k ~= "id" 
+			and type( k ) ~= "function" then
+				self[ k ] = nil
 		end
 	end
 end
