@@ -551,6 +551,14 @@ function GGData:verifyIntegrity()
 	
 end
 
+--- Gets the path to the stored file. Useful if you want to upload it.
+-- @return Two paramaters; the full path and then the relative path.
+function GGData:getFilename()
+	local relativePath = "boxes/" .. self.id .. ".box"
+	local fullPath = system.pathForFile( relativePath, system.DocumentsDirectory )
+	return fullPath, relativePath
+end
+
 --- Destroys this GGData object.
 function GGData:destroy()
 	self:clear()
