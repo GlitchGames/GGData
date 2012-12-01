@@ -50,7 +50,7 @@ local GGData_mt = { __index = GGData }
 local json = require( "json" )
 local lfs = require( "lfs" )
 local crypto = require( "crypto" )
---local sqlite3 = require( "sqlite3" )
+--local ggsqlite3 = require( "sqlite3" )
 
 
 -------- Functions used for converting tables to strings which is used for data integrity. Functions sourced from here - http://lua-users.org/wiki/TableUtils
@@ -126,7 +126,7 @@ end
 function GGData:_openDatabase( path )
 
 	if path then
-		return sqlite3.open( path )
+		return ggsqlite3.open( path )
 	end
 	
 end
@@ -193,7 +193,7 @@ function GGData:load( id, path, baseDir )
 	
 	local data = {}
 	
-	if sqlite3 then
+	if ggsqlite3 then
 	
 		local database = self:_openDatabase( path .. "/" .. id .. ".box" )
 	
@@ -259,7 +259,7 @@ function GGData:save()
 	
 	data = json.encode( data )
 	
-	if sqlite3 then
+	if ggsqlite3 then
 	
 		local database = self:_openDatabase( path .. "/" .. self.id .. ".box" )
 	
