@@ -66,17 +66,3 @@ box:storeIntegrityHash( "newValue" )
 local corruptEntries = box1:verifyIntegrity()
 print( corruptEntries ) -- How many, if any, values were removed due to being different than expected.
 ```
-
-Update History
--------------------------
-
-##### 0.1
-Initial release
-
-##### 0.1.1
-Change to a local object as per Walther Luh's advice
-
-Small typo fixes
-
-##### 0.1.2
-Renamed project to GGData
