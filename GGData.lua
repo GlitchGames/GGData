@@ -50,8 +50,6 @@ local GGData_mt = { __index = GGData }
 local json = require( "json" )
 local lfs = require( "lfs" )
 local crypto = require( "crypto" )
---local ggsqlite3 = require( "sqlite3" )
-
 
 -------- Functions used for converting tables to strings which is used for data integrity. Functions sourced from here - http://lua-users.org/wiki/TableUtils
 function table.val_to_str ( v )
@@ -121,58 +119,6 @@ function GGData:new( id, path, baseDir )
     
 end
 
---- Opens an SQLite database from disk. Called internally.
--- @param path The path to the database.
-function GGData:_openDatabase( path )
-
-	if path then
-		return ggsqlite3.open( path )
-	end
-	
-end
-
---- Saves data to an SQLite database. Called internally.
--- @param database The SQLite database object.
--- @param data A table containing the data to save.
-function GGData:_saveDatabase( database, data )
-
-	if database then
-
-		local query = [[CREATE TABLE IF NOT EXISTS box (id INTEGER PRIMARY KEY, value );]]
-	
-		database:exec( query )
-		
-		local query = [[INSERT INTO box VALUES (NULL, ']] .. ( data or {} ) .. [['); ]]
-
-		database:exec( query )
-		
-		database:close()
-		
-	end
-	
-end
-
---- Loads data from an SQLite database. Called internally.
--- @param database The SQLite database object.
--- @return A table containing the data. Empty if no data found.
-function GGData:_loadDatabase( database )
-
-	local result = database:exec("SELECT * FROM box")
-	local items = {}
-	
-	if database then
-		if result == 0 then
-			for row in database:nrows("SELECT * FROM box") do
-				local encodedItems = row.value
-				items = json.decode( encodedItems )				
-			end
-		end
-	end
-
-	return items
-	
-end
-
 --- Loads, or reloads, this GGData object from disk.
 -- @param id The id of the GGData object.
 -- @param path The path to the GGData. Optional, defaults to "boxes".
@@ -193,27 +139,15 @@ function GGData:load( id, path, baseDir )
 	
 	local data = {}
 	
-	if ggsqlite3 then
+	local path = system.pathForFile( path .. id .. ".box", baseDir or system.DocumentsDirectory )
+	local file = io.open( path, "r" )
 	
-		local database = self:_openDatabase( path .. "/" .. id .. ".box" )
-	
-		if database then
-			data = self:_loadDatabase( database, data )
-		end
-		
-	else
-	
-		local path = system.pathForFile( path .. id .. ".box", baseDir or system.DocumentsDirectory )
-		local file = io.open( path, "r" )
-		
-		if not file then
-			return
-		end
-		
-		data = json.decode( file:read( "*a" ) )
-		io.close( file )
-		
+	if not file then
+		return
 	end
+	
+	data = json.decode( file:read( "*a" ) )
+	io.close( file )
 	
 	-- If no GGData exists then we are acting on a Class function i.e. not a pre-loaded GGData object.
 	if not box then
@@ -259,28 +193,16 @@ function GGData:save()
 	
 	data = json.encode( data )
 	
-	if ggsqlite3 then
+	path = system.pathForFile( "boxes/" .. self.id .. ".box", system.DocumentsDirectory )
+	local file = io.open( path, "w" )
 	
-		local database = self:_openDatabase( path .. "/" .. self.id .. ".box" )
-	
-		if database then
-			self:_saveDatabase( database, data )
-		end
-		
-	else
-	
-		path = system.pathForFile( "boxes/" .. self.id .. ".box", system.DocumentsDirectory )
-		local file = io.open( path, "w" )
-		
-		if not file then
-			return
-		end
-		
-		file:write( data )
-		io.close( file )
-		file = nil
-		
+	if not file then
+		return
 	end
+	
+	file:write( data )
+	io.close( file )
+	file = nil
 	
 	-- Set the key back again
 	self.integrityKey = integrityKey
