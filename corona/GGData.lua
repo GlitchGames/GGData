@@ -95,11 +95,11 @@ function GGData:new( id, path, baseDir )
     setmetatable( self, GGData_mt )
     
     self.id = id
-    self.path = path
+    self.path = path or "boxes"
     self.baseDir = baseDir
     
     if self.id then
-    	self:load()
+    	self:load( self.id, self.path, self.baseDir )
     end
     		
     return self
@@ -167,20 +167,21 @@ function GGData:save()
 		end
 	end
 	
+
 	-- Check for and create if necessary the boxes directory.
 	local path = system.pathForFile( "", system.DocumentsDirectory )
 	local success = lfs.chdir( path )
 	
 	if success then
-		lfs.mkdir( "boxes" )
-		path = "boxes"
+		lfs.mkdir( self.path )
+		path = self.path
 	else
 		path = ""
 	end
 	
 	data = json.encode( data )
 	
-	path = system.pathForFile( "boxes/" .. self.id .. ".box", system.DocumentsDirectory )
+	path = system.pathForFile( self.path .. "/" .. self.id .. ".box", system.DocumentsDirectory )
 	local file = io.open( path, "w" )
 	
 	if not file then
@@ -323,7 +324,7 @@ function GGData:delete( id )
 		id = self.id
 	end
 	
-	local path = system.pathForFile( "boxes", system.DocumentsDirectory )
+	local path = system.pathForFile( self.path, system.DocumentsDirectory )
 
 	local success = lfs.chdir( path )
 	
@@ -344,7 +345,7 @@ function GGData:setSync( enabled, id )
 		id = self.id
 	end
 	
-	native.setSync( "boxes/" .. id .. ".box", { iCloudBackup = enabled } )
+	native.setSync( self.path .. "/" .. id .. ".box", { iCloudBackup = enabled } )
 	
 end
 
