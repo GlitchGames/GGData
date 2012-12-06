@@ -134,6 +134,7 @@ function GGData:load( id, path, baseDir )
 	end
 	
 	data = json.decode( file:read( "*a" ) )
+	
 	io.close( file )
 	
 	-- If no GGData exists then we are acting on a Class function i.e. not a pre-loaded GGData object.
@@ -167,7 +168,6 @@ function GGData:save()
 		end
 	end
 	
-
 	-- Check for and create if necessary the boxes directory.
 	local path = system.pathForFile( "", system.DocumentsDirectory )
 	local success = lfs.chdir( path )
@@ -178,10 +178,10 @@ function GGData:save()
 	else
 		path = ""
 	end
-	
+		
 	data = json.encode( data )
 	
-	path = system.pathForFile( self.path .. "/" .. self.id .. ".box", system.DocumentsDirectory )
+	path = system.pathForFile( self.path .. self.id .. ".box", system.DocumentsDirectory )
 	local file = io.open( path, "w" )
 	
 	if not file then
@@ -189,6 +189,7 @@ function GGData:save()
 	end
 	
 	file:write( data )
+	
 	io.close( file )
 	file = nil
 	
