@@ -6,27 +6,27 @@
 --
 -- Author: Graham Ranson of Glitch Games - www.glitchgames.co.uk
 --
--- Comments: 
+-- Comments:
 --
---		Many people have used Ice however as of late it seems to be experiencing weird 
+--		Many people have used Ice however as of late it seems to be experiencing weird
 --		issues. GGData is a trimmed down version to allow for better stability.
 --
 -- Copyright (C) 2012 Graham Ranson, Glitch Games Ltd.
 --
--- Permission is hereby granted, free of charge, to any person obtaining a copy of this 
--- software and associated documentation files (the "Software"), to deal in the Software 
--- without restriction, including without limitation the rights to use, copy, modify, merge, 
--- publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons 
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of this
+-- software and associated documentation files (the "Software"), to deal in the Software
+-- without restriction, including without limitation the rights to use, copy, modify, merge,
+-- publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 -- to whom the Software is furnished to do so, subject to the following conditions:
 --
--- The above copyright notice and this permission notice shall be included in all copies or 
+-- The above copyright notice and this permission notice shall be included in all copies or
 -- substantial portions of the Software.
 --
--- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
--- INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
--- PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
--- FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
--- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+-- INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+-- PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+-- FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+-- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 --
 ----------------------------------------------------------------------------------------------------
@@ -89,21 +89,21 @@ end
 -- @param baseDir The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
 -- @return The new object.
 function GGData:new( id, path, baseDir )
-    
+
     local self = {}
-    
+
     setmetatable( self, GGData_mt )
-    
+
     self.id = id
     self.path = path or "boxes"
     self.baseDir = baseDir
-    
+
     if self.id then
-    	self:load( self.id, self.path, self.baseDir )
+    	self:load()
     end
-    		
+
     return self
-    
+
 end
 
 --- Loads, or reloads, this GGData object from disk.
@@ -111,45 +111,45 @@ end
 -- @param path The path to the GGData. Optional, defaults to "boxes".
 -- @param baseDir The base directory for the GGData. Optional, defaults to system.DocumentsDirectory.
 function GGData:load( id, path, baseDir )
-	
+
 	-- Set up the path
-	path = path or "boxes/"
-	
+	path = path or "boxes"
+
 	-- Pre-declare the new GGData object
 	local box
-	
+
 	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
 	if not id then
 		id = self.id
 		box = self
 	end
-	
+
 	local data = {}
-	
-	local path = system.pathForFile( path .. id .. ".box", baseDir or system.DocumentsDirectory )
+
+	local path = system.pathForFile( path .. "/" .. id .. ".box", baseDir or system.DocumentsDirectory )
+
 	local file = io.open( path, "r" )
-	
+
 	if not file then
 		return
 	end
-	
+
 	data = json.decode( file:read( "*a" ) )
-	
 	io.close( file )
-	
+
 	-- If no GGData exists then we are acting on a Class function i.e. not a pre-loaded GGData object.
 	if not box then
 		-- Create the new GGData object.
 		box = GGData:new()
 	end
-	
+
 	-- Copy all the properties across.
 	for k, v in pairs( data ) do
 		box[ k ] = v
 	end
-	
+
 	return box
-	
+
 end
 
 --- Saves this GGData object to disk.
@@ -158,44 +158,44 @@ function GGData:save()
 	-- Don't want this key getting saved out
 	local integrityKey = self.integrityKey
 	self.integrityKey = nil
-	
+
 	local data = {}
-	
+
 	-- Copy across all the properties that can be saved.
 	for k, v in pairs( self ) do
 		if type( v ) ~= "function" and type( v ) ~= "userdata" then
 			data[ k ] = v
 		end
 	end
-	
+
 	-- Check for and create if necessary the boxes directory.
 	local path = system.pathForFile( "", system.DocumentsDirectory )
 	local success = lfs.chdir( path )
-	
+
 	if success then
 		lfs.mkdir( self.path )
 		path = self.path
 	else
 		path = ""
 	end
-		
+
 	data = json.encode( data )
-	
-	path = system.pathForFile( self.path .. self.id .. ".box", system.DocumentsDirectory )
+
+	path = system.pathForFile( self.path .. "/" .. self.id .. ".box", system.DocumentsDirectory )
 	local file = io.open( path, "w" )
-	
+
 	if not file then
 		return
 	end
-	
+
 	file:write( data )
-	
+
 	io.close( file )
 	file = nil
-	
+
 	-- Set the key back again
 	self.integrityKey = integrityKey
-	
+
 end
 
 --- Sets a value in this GGData object.
@@ -306,35 +306,35 @@ end
 --- Clears this GGData object.
 function GGData:clear()
 	for k, v in pairs( self ) do
-		if k ~= "integrityControlEnabled" 
+		if k ~= "integrityControlEnabled"
 			and k ~= "integrityAlgorithm"
 			and k ~= "integrityKey"
-			and k ~= "id" 
+			and k ~= "id"
 			and type( k ) ~= "function" then
 				self[ k ] = nil
 		end
 	end
 end
 
---- Deletes this GGData object from disk. 
+--- Deletes this GGData object from disk.
 -- @param id The id of the GGData to delete. Optional, only required if calling on a non-loaded object.
 function GGData:delete( id )
-	
+
 	-- If no id was passed in then assume we're working with a pre-loaded GGData object so use its id
 	if not id then
 		id = self.id
 	end
-	
+
 	local path = system.pathForFile( self.path, system.DocumentsDirectory )
 
 	local success = lfs.chdir( path )
-	
+
 	os.remove( path .. "/" .. id .. ".box" )
-	
+
 	if not success then
 		return
 	end
-	
+
 end
 
 --- Enables or disables the Syncing of this box.
@@ -345,9 +345,9 @@ function GGData:setSync( enabled, id )
 	if not id then
 		id = self.id
 	end
-	
+
 	native.setSync( self.path .. "/" .. id .. ".box", { iCloudBackup = enabled } )
-	
+
 end
 
 --- Checks if Syncing for this box is enabled or not.
@@ -358,9 +358,9 @@ function GGData:getSync( id )
 	if not id then
 		id = self.id
 	end
-	
-	return native.getSync( "boxes/" .. id .. ".box", { key = "iCloudBackup" } )
-	
+
+	return native.getSync( self.path .. "/" .. id .. ".box", { key = "iCloudBackup" } )
+
 end
 
 --- Enables integrity checking.
@@ -402,50 +402,50 @@ function GGData:storeIntegrityHash( name, value )
 	if not self.integrityControlEnabled then
 		return
 	end
-	
+
 	value = value or self[ name ]
-	
+
 	self.hash = self.hash or {}
-	
+
 	if value then
 		self.hash[ name ] = crypto.hmac( self.integrityAlgorithm, toString( value ), self.integrityKey, false )
 	end
-	
+
 end
 
 --- Updates/sets the hash value of the all stored values.
 function GGData:updateAllIntegrityHashes()
-	
+
 	for k, v in pairs( self ) do
-		if k ~= "integrityControlEnabled" 
+		if k ~= "integrityControlEnabled"
 			and k ~= "integrityAlgorithm"
 			and k ~= "integrityKey"
-			and k ~= "hash" 
-			and k ~= "id" 
+			and k ~= "hash"
+			and k ~= "id"
 			and  toString( v ) then
 				self:storeIntegrityHash( k, v )
 		end
 	end
-	
+
 end
 
 --- Checks the hashed versions of all stored data. Will remove any values that don't match their hashes, i.e. they've been tampered with.
 function GGData:verifyIntegrity()
-	
+
 	if not self.integrityControlEnabled then
 		return
 	end
-	
+
 	local corruptEntries = {}
-	
+
 	for k, v in pairs( self ) do
-		if k ~= "integrityControlEnabled" 
+		if k ~= "integrityControlEnabled"
 			and k ~= "integrityAlgorithm"
 			and k ~= "integrityKey"
-			and k ~= "hash" 
-			and k ~= "id" 
+			and k ~= "hash"
+			and k ~= "id"
 			and toString( v ) then
-				
+
 				if not self:verifyItemIntegrity( k, v ) then
 					corruptEntries[ #corruptEntries + 1 ] = { name = k, value = v }
 					self[ k ] = nil
@@ -453,7 +453,7 @@ function GGData:verifyIntegrity()
 				end
 		end
 	end
-	
+
 	for k, v in pairs( self.hash ) do
 		if not self[ k ] then
 			corruptEntries[ #corruptEntries + 1 ] = { name = k, value = v }
@@ -461,15 +461,15 @@ function GGData:verifyIntegrity()
 			self.hash[ k ] = nil
 		end
 	end
-	
+
 	return corruptEntries
-	
+
 end
 
 --- Gets the path to the stored file. Useful if you want to upload it.
 -- @return Two paramaters; the full path and then the relative path.
 function GGData:getFilename()
-	local relativePath = "boxes/" .. self.id .. ".box"
+	local relativePath = self.path .. "/" .. self.id .. ".box"
 	local fullPath = system.pathForFile( relativePath, system.DocumentsDirectory )
 	return fullPath, relativePath
 end
