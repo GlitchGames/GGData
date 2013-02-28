@@ -213,18 +213,24 @@ function GGData:setIfLower( name, value )
 end
 
 --- Increments a value in this GGData object.
--- @param name The name of the value to increment. Must be a number.
+-- @param name The name of the value to increment. Must be a number. If it doesn't exist it will be set to 0 and then incremented.
 -- @param amount The amount to increment. Optional, defaults to 1.
 function GGData:increment( name, amount )
+	if not self[ name ] then
+		self:set( name, 0 )
+	end
 	if self[ name ] and type( self[ name ] ) == "number" then
 		self[ name ] = self[ name ] + ( amount or 1 )
 	end
 end
 
 --- Decrements a value in this GGData object.
--- @param name The name of the value to decrement. Must be a number.
+-- @param name The name of the value to decrement. Must be a number. If it doesn't exist it will be set to 0 and then decremented.
 -- @param amount The amount to decrement. Optional, defaults to 1.
 function GGData:decrement( name, amount )
+	if not self[ name ] then
+		self:set( name, 0 )
+	end
 	if self[ name ] and type( self[ name ] ) == "number" then
 		self[ name ] = self[ name ] - ( amount or 1 )
 	end
