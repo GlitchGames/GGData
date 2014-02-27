@@ -316,6 +316,7 @@ function GGData:clear()
 			and k ~= "integrityAlgorithm"
 			and k ~= "integrityKey"
 			and k ~= "id"
+			and k ~= "path"
 			and type( k ) ~= "function" then
 				self[ k ] = nil
 		end
@@ -428,6 +429,7 @@ function GGData:updateAllIntegrityHashes()
 			and k ~= "integrityKey"
 			and k ~= "hash"
 			and k ~= "id"
+			and k ~= "path"
 			and  toString( v ) then
 				self:storeIntegrityHash( k, v )
 		end
@@ -450,6 +452,7 @@ function GGData:verifyIntegrity()
 			and k ~= "integrityKey"
 			and k ~= "hash"
 			and k ~= "id"
+			and k ~= "path"
 			and toString( v ) then
 
 				if not self:verifyItemIntegrity( k, v ) then
