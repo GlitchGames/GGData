@@ -210,7 +210,7 @@ end
 -- @param name The name of the value to get.
 -- @return The value.
 function GGData:get( name )
-	return self[ name ]
+	return self[ name ] or self[ tostring( name) ]
 end
 
 --- Checks whether a value of this GGData object is higher than another value.
